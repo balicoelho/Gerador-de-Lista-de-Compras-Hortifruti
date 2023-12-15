@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import produtos from "../../database";
 import Produtos from "../../components/produtos";
 import Cabecalho from "../../components/cabecalho";
@@ -8,21 +8,6 @@ import copy from "clipboard-copy";
 import TextInput from "../../components/Endereco";
 
 const Inicio = () => {
-  const [inputValue, setInputValue] = useState("");
-
-  useEffect(() => {
-    const storedValue = localStorage.getItem("userInput");
-    if (storedValue) {
-      setInputValue(storedValue);
-    }
-  }, ["userInput"]);
-
-  const handleChange = (event) => {
-    const newValue = event.target.value;
-    setInputValue(newValue);
-    localStorage.setItem("userInput", newValue);
-  };
-
   const [checkboxStates, setCheckboxStates] = useState(
     JSON.parse(localStorage.getItem("checkboxStates")) ||
       produtos.map((produto) => ({ id: produto.id, value: false }))
@@ -76,29 +61,18 @@ const Inicio = () => {
 
   const handleClick = () => {
     const elementoParaCopiar = document.querySelector(".listaCompras");
-    const elementotxt1 = elementoParaCopiar.querySelectorAll(".text1");
-    const text1Copiado = Array.from(elementotxt1)
-      .map((item) => item.textContent)
-      .join("\n");
-    const elementotext2 = elementoParaCopiar.querySelectorAll(".text2");
-    const text2Copiado = Array.from(elementotext2)
-      .map((item) => item.textContent)
-      .join("\n");
+    const enderecoParaCopiar = document.querySelector(".endereco");
+    console.log(enderecoParaCopiar);
 
+    const elementoHeader = elementoParaCopiar.querySelectorAll("p");
+    const headerCopiado = Array.from(elementoHeader)
+      .map((item) => item.textContent)
+      .join("\n");
     const itensLista = elementoParaCopiar.querySelectorAll("li");
     const textoCopiado = Array.from(itensLista)
       .map((item) => item.textContent)
       .join("\n");
-
-    copy(
-      text1Copiado +
-        "\n" +
-        inputValue +
-        "\n" +
-        text2Copiado +
-        "\n" +
-        textoCopiado
-    );
+    copy(headerCopiado + "\n" + +"\n" + textoCopiado);
   };
 
   return (
@@ -154,15 +128,16 @@ const Inicio = () => {
             <Botao onClick={handleClick} />
           </div>
           <div className="listaCompras">
-            <p className="text1">
+            <p>
               Olá! Gostaria de solicitar o pedido abaixo para entrega domiciliar
               no endereço:
             </p>
             <TextInput
-              placeholder="Digite seu endereço..."
-              handleChange={handleChange}
+              className="endereco"
+              storageKey="userInput"
+              placeholder="Digite algo..."
             />
-            <p className="text2">Forma de pgto: cartao de credito. Obrigada!</p>
+            <p>Forma de pgto: cartao de credito. Obrigada!</p>
             <ul>
               {lista.map((item, index) => (
                 <li key={index}>{item}</li>
