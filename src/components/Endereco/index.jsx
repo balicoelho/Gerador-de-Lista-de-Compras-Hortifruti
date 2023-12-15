@@ -1,4 +1,4 @@
-const TextInput = ({ placeholder, inputValue, handleChange }) => {
+const Endereco = ({ placeholder, inputValue, handleChange }) => {
   return (
     <input
       type="text"
@@ -9,4 +9,4 @@ const TextInput = ({ placeholder, inputValue, handleChange }) => {
   );
 };
 
-export default TextInput;
+export default Endereco;
