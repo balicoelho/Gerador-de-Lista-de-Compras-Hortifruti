@@ -1,21 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import produtos from "../../database";
 import Produtos from "../../components/produtos";
 import Cabecalho from "../../components/cabecalho";
 import Botao from "../../components/Botao";
 import Rodape from "../../components/Rodape";
+import copy from "clipboard-copy";
 
 const Inicio = () => {
   const [checkboxStates, setCheckboxStates] = useState(
-    produtos.map((produto) => ({ id: produto.id, value: false }))
+    JSON.parse(localStorage.getItem("checkboxStates")) ||
+      produtos.map((produto) => ({ id: produto.id, value: false }))
   );
 
   const [quantidade, setQuantidade] = useState(
-    produtos.map((produto) => ({ id: produto.id, value: "" }))
+    JSON.parse(localStorage.getItem("quantidade")) ||
+      produtos.map((produto) => ({ id: produto.id, value: "" }))
   );
 
   const [medida, setMedida] = useState(
-    produtos.map((produto) => ({ id: produto.id, value: "" }))
+    JSON.parse(localStorage.getItem("medida")) ||
+      produtos.map((produto) => ({ id: produto.id, value: "" }))
   );
 
   const handleInputChange = (stateSetter, inputId, newValue) => {
@@ -34,6 +38,12 @@ const Inicio = () => {
     );
   };
 
+  useEffect(() => {
+    localStorage.setItem("checkboxStates", JSON.stringify(checkboxStates));
+    localStorage.setItem("quantidade", JSON.stringify(quantidade));
+    localStorage.setItem("medida", JSON.stringify(medida));
+  }, [checkboxStates, quantidade, medida]);
+
   const selecionados = checkboxStates
     .filter((state) => state.value)
     .map((state) => state.id);
@@ -48,6 +58,19 @@ const Inicio = () => {
       return `${produto.nome} - ${valor} ${medidaUnit}`;
     });
 
+  const handleClick = () => {
+    const elementoParaCopiar = document.querySelector(".listaCompras");
+    const elementoHeader = elementoParaCopiar.querySelectorAll("p");
+    const headerCopiado = Array.from(elementoHeader)
+      .map((item) => item.textContent)
+      .join("\n");
+    const itensLista = elementoParaCopiar.querySelectorAll("li");
+    const textoCopiado = Array.from(itensLista)
+      .map((item) => item.textContent)
+      .join("\n");
+    copy(headerCopiado + "\n" + textoCopiado);
+  };
+
   return (
     <div className="flex flex-col w-full">
       <div className="justify-center items-center m-6 bg-green-800 text-gray-200">
@@ -61,12 +84,19 @@ const Inicio = () => {
           <div className="flex m-6 justify-center text-center">
             <div className="flex flex-col">
               {produtos.map((produto, index) => {
+                const medidaAtual = medida.find(
+                  (input) => input.id === produto.id
+                ) || { value: "" };
+
                 return (
                   <Produtos
                     key={produto.id}
                     children={produto.nome}
-                    checked={checkboxStates.value}
-                    name={medida.value}
+                    checked={
+                      checkboxStates.find((state) => state.id === produto.id)
+                        ?.value || false
+                    }
+                    name={medidaAtual.value}
                     onCheckboxChange={() => handleCheckboxChange(produto.id)}
                     onMedidaChange={(e) =>
                       handleInputChange(setMedida, produto.id, e.target.value)
@@ -78,7 +108,10 @@ const Inicio = () => {
                         e.target.value
                       )
                     }
-                    value={quantidade.value}
+                    value={
+                      quantidade.find((input) => input.id === produto.id)
+                        ?.value || ""
+                    }
                   />
                 );
               })}
@@ -88,13 +121,20 @@ const Inicio = () => {
         <div className="m-6 w-6/12 justify-center text-center border-red-950 border-2">
           <div className="flex justify-center items-center my-5">
             <h1 className="text-xl font-bold mr-5 ">Lista de compras</h1>
-            <Botao />
+            <Botao onClick={handleClick} />
           </div>
-          <ul>
-            {lista.map((item, index) => (
-              <li key={index}>{item}</li>
-            ))}
-          </ul>
+          <div className="listaCompras">
+            <p>
+              Olá! Gostaria de solicitar o pedido abaixo para entrega domiciliar
+              no endereço: {process.env.REACT_APP_endereco}
+            </p>
+            <p>Forma de pgto: cartao de credito. Obrigada!</p>
+            <ul>
+              {lista.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
       <Rodape />
