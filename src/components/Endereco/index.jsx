@@ -1,9 +1,9 @@
-const Endereco = ({ placeholder, inputValue, handleChange }) => {
+const Endereco = ({ placeholder, value, handleChange }) => {
   return (
     <input
       type="text"
       placeholder={placeholder}
-      value={inputValue}
+      value={value}
       onChange={handleChange}
     />
   );

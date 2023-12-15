@@ -8,19 +8,14 @@ import copy from "clipboard-copy";
 import TextInput from "../../components/Endereco";
 
 const Inicio = () => {
-  const [inputValue, setInputValue] = useState("");
-
-  useEffect(() => {
-    const storedValue = localStorage.getItem("userInput");
-    if (storedValue) {
-      setInputValue(storedValue);
-    }
-  }, ["userInput"]);
+  const [inputValue, setInputValue] = useState(
+    JSON.parse(localStorage.getItem("inputValue")) || ""
+  );
 
   const handleChange = (event) => {
     const newValue = event.target.value;
     setInputValue(newValue);
-    localStorage.setItem("userInput", newValue);
+    localStorage.setItem("inputValue", JSON.stringify(newValue));
   };
 
   const [checkboxStates, setCheckboxStates] = useState(
@@ -58,7 +53,8 @@ const Inicio = () => {
     localStorage.setItem("checkboxStates", JSON.stringify(checkboxStates));
     localStorage.setItem("quantidade", JSON.stringify(quantidade));
     localStorage.setItem("medida", JSON.stringify(medida));
-  }, [checkboxStates, quantidade, medida]);
+    localStorage.setItem("inputValue", JSON.stringify(inputValue));
+  }, [checkboxStates, quantidade, medida, inputValue]);
 
   const selecionados = checkboxStates
     .filter((state) => state.value)
@@ -117,10 +113,9 @@ const Inicio = () => {
                 const medidaAtual = medida.find(
                   (input) => input.id === produto.id
                 ) || { value: "" };
-
                 return (
                   <Produtos
-                    key={produto.id}
+                    key={index}
                     children={produto.nome}
                     checked={
                       checkboxStates.find((state) => state.id === produto.id)
@@ -161,6 +156,7 @@ const Inicio = () => {
             <TextInput
               placeholder="Digite seu endereço..."
               handleChange={handleChange}
+              value={inputValue}
             />
             <p className="text2">Forma de pgto: cartao de credito. Obrigada!</p>
             <ul>
