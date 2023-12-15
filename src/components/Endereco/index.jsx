@@ -5,6 +5,7 @@ const Endereco = ({ placeholder, value, handleChange }) => {
       placeholder={placeholder}
       value={value}
       onChange={handleChange}
+      className="w-full text-center outline-none"
     />
   );
 };

@@ -148,7 +148,7 @@ const Inicio = () => {
             <h1 className="text-xl font-bold mr-5 ">Lista de compras</h1>
             <Botao onClick={handleClick} />
           </div>
-          <div className="listaCompras">
+          <div className="listaCompras ">
             <p className="text1">
               Olá! Gostaria de solicitar o pedido abaixo para entrega domiciliar
               no endereço:
